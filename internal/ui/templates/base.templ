@@ -1,0 +1,425 @@
+package templates
+
+templ Base(title string, description string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width,initial-scale=1"/>
+			<title>{ title }</title>
+			<script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@main/bundles/datastar.js"></script>
+			<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.js"></script>
+			<style>
+			:root { 
+				--primary:#3b82f6; --secondary:#64748b; --success:#22c55e; --danger:#ef4444; 
+				--warning:#f59e0b; --info:#8b5cf6; --background:#f8fafc; --surface:#ffffff; 
+				--text-primary:#1e293b; --text-secondary:#64748b; --border:#e2e8f0; 
+				--shadow:0 4px 6px -1px rgb(0 0 0 / .1),0 2px 4px -2px rgb(0 0 0 / .1); 
+				--border-radius:12px; --transition:all 0.3s ease;
+				--header-height: 140px;
+				--card-padding: 28px;
+				--grid-gap: 24px;
+			}
+			
+			* {
+				box-sizing: border-box;
+			}
+			
+			body {
+				font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+				margin: 0;
+				padding: 16px;
+				background: var(--background);
+				color: var(--text-primary);
+				line-height: 1.6;
+				overflow-x: hidden;
+			}
+			
+			.header {
+				background: linear-gradient(135deg, var(--primary), var(--info));
+				border-radius: var(--border-radius);
+				padding: 32px 20px;
+				text-align: center;
+				color: #fff;
+				box-shadow: var(--shadow);
+				margin-bottom: var(--grid-gap);
+			}
+			
+			.header h1 {
+				margin: 0 0 8px 0;
+				font-size: clamp(1.5rem, 4vw, 2.5rem);
+				font-weight: 700;
+			}
+			
+			.header p {
+				margin: 0;
+				font-size: clamp(0.9rem, 2vw, 1.1rem);
+				opacity: 0.9;
+			}
+			
+			.grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+				gap: var(--grid-gap);
+				margin: var(--grid-gap) 0;
+			}
+			
+			.card {
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: var(--border-radius);
+				padding: var(--card-padding);
+				box-shadow: var(--shadow);
+				transition: var(--transition);
+				overflow: hidden;
+			}
+			
+			.card:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 25px -5px rgb(0 0 0 / .1);
+			}
+			
+			.card h3 {
+				margin: 0 0 20px 0;
+				font-size: clamp(1rem, 2.5vw, 1.25rem);
+				color: var(--text-primary);
+				font-weight: 600;
+			}
+			
+			.chart {
+				height: 350px;
+				position: relative;
+				margin: 16px 0;
+			}
+			
+			.table-container {
+				overflow-x: auto;
+				border-radius: var(--border-radius);
+				box-shadow: var(--shadow);
+			}
+			
+			.modern-table {
+				width: 100%;
+				min-width: 600px;
+				border-collapse: collapse;
+				font-size: 14px;
+				background: white;
+			}
+			
+			.modern-table th {
+				background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+				padding: 12px 16px;
+				text-align: left;
+				font-weight: 600;
+				color: var(--text-primary);
+				border-bottom: 2px solid var(--border);
+				white-space: nowrap;
+				font-size: 13px;
+			}
+			
+			.modern-table td {
+				padding: 12px 16px;
+				border-bottom: 1px solid var(--border);
+				transition: var(--transition);
+				font-size: 13px;
+			}
+			
+			.modern-table tr:hover td {
+				background-color: #f8fafc;
+			}
+			
+			.category-badge {
+				background: #f1f5f9;
+				padding: 4px 8px;
+				border-radius: 4px;
+				font-size: 11px;
+				color: var(--text-primary);
+				white-space: nowrap;
+				display: inline-block;
+			}
+			
+			.loading {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				min-height: 200px;
+				color: var(--text-secondary);
+				font-size: 14px;
+			}
+			
+			.loading::after {
+				content: "";
+				width: 20px;
+				height: 20px;
+				border: 2px solid var(--primary);
+				border-top: transparent;
+				border-radius: 50%;
+				margin-left: 10px;
+				animation: spin 1s linear infinite;
+			}
+			
+			@keyframes spin {
+				to { transform: rotate(360deg); }
+			}
+			
+			/* Mobile optimizations */
+			@media (max-width: 768px) {
+				body {
+					padding: 12px;
+				}
+				
+				.header {
+					padding: 24px 16px;
+				}
+				
+				.grid {
+					grid-template-columns: 1fr;
+					gap: 20px;
+				}
+				
+				.card {
+					padding: 20px;
+				}
+				
+				.chart {
+					height: 280px;
+				}
+				
+				.modern-table th,
+				.modern-table td {
+					padding: 10px 12px;
+					font-size: 12px;
+				}
+				
+				.category-badge {
+					font-size: 10px;
+					padding: 3px 6px;
+				}
+			}
+			
+			/* Small mobile optimizations */
+			@media (max-width: 480px) {
+				body {
+					padding: 8px;
+				}
+				
+				.header {
+					padding: 20px 12px;
+				}
+				
+				.card {
+					padding: 16px;
+				}
+				
+				.chart {
+					height: 250px;
+				}
+				
+				.modern-table {
+					min-width: 500px;
+				}
+				
+				.modern-table th,
+				.modern-table td {
+					padding: 8px 10px;
+					font-size: 11px;
+				}
+			}
+			
+			/* Large screen optimizations */
+			@media (min-width: 1200px) {
+				body {
+					padding: 24px;
+				}
+				
+				.grid {
+					grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+					gap: 32px;
+				}
+				
+				.card {
+					padding: 32px;
+				}
+				
+				.chart {
+					height: 400px;
+				}
+			}
+			
+			/* Ultra-wide screen optimizations */
+			@media (min-width: 1600px) {
+				.grid {
+					grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+					max-width: 1400px;
+					margin: var(--grid-gap) auto;
+				}
+			}
+			
+			/* Print styles */
+			@media print {
+				body {
+					background: white;
+					padding: 0;
+				}
+				
+				.card {
+					break-inside: avoid;
+					box-shadow: none;
+					border: 1px solid #ddd;
+					margin-bottom: 20px;
+				}
+				
+				.chart {
+					height: 300px;
+				}
+			}
+		</style>
+		</head>
+		<body data-signals='{"refreshInterval": 30000, "autoRefresh": true}'>
+			<div class="header">
+				<h1>{ title }</h1>
+				<p>{ description }</p>
+			</div>
+			{ children... }
+			<script>
+			let charts = {};
+			
+			const chartConfig = {
+				responsive: true,
+				maintainAspectRatio: false,
+				plugins: { 
+					legend: { position: 'bottom', labels: { usePointStyle: true } },
+					tooltip: { 
+						backgroundColor: 'rgba(0,0,0,0.9)', 
+						titleColor: '#fff', 
+						bodyColor: '#fff',
+						borderColor: 'rgba(255,255,255,0.1)',
+						borderWidth: 1
+					}
+				},
+				animations: { 
+					tension: { duration: 1000, easing: 'easeInOutBack' },
+					y: { duration: 500, easing: 'easeOutQuart' }
+				}
+			};
+
+			const createChart = (canvas, config) => {
+				if (charts[canvas.id]) {
+					charts[canvas.id].destroy();
+				}
+				const ctx = canvas.getContext('2d');
+				charts[canvas.id] = new Chart(ctx, {
+					...config,
+					options: { ...chartConfig, ...(config.options || {}) }
+				});
+			};
+
+			window.initProductsChart = (data) => {
+				console.log('🚀 Initializing products chart with data:', data);
+				setTimeout(() => {
+					const canvas = document.getElementById('products-chart');
+					if (canvas && data && Array.isArray(data)) {
+						createChart(canvas, {
+							type: 'bar',
+							data: {
+								labels: data.map(p => p.product_name.slice(0, 20) + (p.product_name.length > 20 ? '...' : '')),
+								datasets: [{
+									label: 'Transaction Count',
+									data: data.map(p => p.frequency),
+									backgroundColor: 'rgba(59, 130, 246, 0.8)',
+									borderColor: 'rgb(59, 130, 246)',
+									borderWidth: 2,
+									borderRadius: 4
+								}, {
+									label: 'Stock Quantity',
+									data: data.map(p => p.stock_quantity),
+									backgroundColor: 'rgba(34, 197, 94, 0.8)',
+									borderColor: 'rgb(34, 197, 94)',
+									borderWidth: 2,
+									borderRadius: 4
+								}]
+							}
+						});
+					} else {
+						console.error('Products chart: Canvas not found or invalid data', {canvas, data});
+					}
+				}, 100);
+			};
+
+			window.initMonthlyChart = (data) => {
+				console.log('📊 Initializing monthly chart with data:', data);
+				setTimeout(() => {
+					const canvas = document.getElementById('monthly-chart');
+					if (canvas && data && Array.isArray(data)) {
+						createChart(canvas, {
+							type: 'line',
+							data: {
+								labels: data.map(m => m.month),
+								datasets: [{
+									label: 'Sales Volume ($)',
+									data: data.map(m => m.volume),
+									borderColor: 'rgb(139, 92, 246)',
+									backgroundColor: 'rgba(139, 92, 246, 0.2)',
+									fill: true,
+									tension: 0.4,
+									borderWidth: 3,
+									pointBackgroundColor: 'rgb(139, 92, 246)',
+									pointBorderColor: '#fff',
+									pointBorderWidth: 2,
+									pointRadius: 6
+								}]
+							}
+						});
+					} else {
+						console.error('Monthly chart: Canvas not found or invalid data', {canvas, data});
+					}
+				}, 100);
+			};
+
+			window.initRegionsChart = (data) => {
+				console.log('🌍 Initializing regions chart with data:', data);
+				setTimeout(() => {
+					const canvas = document.getElementById('regions-chart');
+					if (canvas && data && Array.isArray(data)) {
+						createChart(canvas, {
+							type: 'bar',
+							data: {
+								labels: data.map(r => r.region),
+								datasets: [{
+									label: 'Total Revenue ($)',
+									data: data.map(r => r.total_revenue),
+									backgroundColor: data.map((_, i) => 
+										`hsla(${(i * 360 / data.length)}, 70%, 60%, 0.8)`
+									),
+									borderColor: data.map((_, i) => 
+										`hsla(${(i * 360 / data.length)}, 70%, 50%, 1)`
+									),
+									borderWidth: 2,
+									borderRadius: 4
+								}]
+							},
+							options: {
+								indexAxis: 'y',
+								scales: {
+									x: { 
+										beginAtZero: true,
+										ticks: { callback: value => '$' + value.toLocaleString() }
+									}
+								}
+							}
+						});
+					} else {
+						console.error('Regions chart: Canvas not found or invalid data', {canvas, data});
+					}
+				}, 100);
+			};
+
+			if (typeof EventSource !== 'undefined') {
+				setTimeout(() => {
+					console.log('Dashboard initialized with Datastar SSE support');
+				}, 1000);
+			}
+		</script>
+		</body>
+	</html>
+}

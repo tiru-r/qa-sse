@@ -1,0 +1,92 @@
+package templates
+
+import (
+	"abt-dashboard/internal/models"
+	"fmt"
+)
+
+templ Dashboard() {
+	@Base("ABT Corporation Dashboard", "Real-time business analytics") {
+		<div class="grid">
+			<div class="card" id="country-table">
+				<h3>📊 Country Revenue Analysis</h3>
+				<div
+					data-on-load="@get('/sse/country-revenue')"
+					id="country-content"
+				>
+					<div class="loading">Loading country revenue data...</div>
+				</div>
+			</div>
+			<div class="card">
+				<h3>📈 Top 20 Products by Transactions</h3>
+				<div class="chart">
+					<canvas id="products-chart"></canvas>
+				</div>
+				<div
+					data-on-load="@get('/sse/top-products')"
+					data-effect="$productsData && initProductsChart($productsData)"
+					id="products-content"
+				>
+					<div class="loading">Loading products data...</div>
+				</div>
+			</div>
+		</div>
+		<div class="grid">
+			<div class="card">
+				<h3>💰 Monthly Sales Volume</h3>
+				<div class="chart">
+					<canvas id="monthly-chart"></canvas>
+				</div>
+				<div
+					data-on-load="@get('/sse/monthly-sales')"
+					data-effect="$monthlyData && initMonthlyChart($monthlyData)"
+					id="monthly-content"
+				>
+					<div class="loading">Loading monthly sales data...</div>
+				</div>
+			</div>
+			<div class="card">
+				<h3>🌍 Top 30 Regions by Revenue</h3>
+				<div class="chart">
+					<canvas id="regions-chart"></canvas>
+				</div>
+				<div
+					data-on-load="@get('/sse/top-regions')"
+					data-effect="$regionsData && initRegionsChart($regionsData)"
+					id="regions-content"
+				>
+					<div class="loading">Loading regions data...</div>
+				</div>
+			</div>
+		</div>
+	}
+}
+
+templ countryRevenueTable(data []models.CountryRevenue) {
+	<div class="table-container">
+		<table class="modern-table">
+			<thead>
+				<tr>
+					<th>Country</th>
+					<th>Product</th>
+					<th>Category</th>
+					<th>Revenue</th>
+					<th>Orders</th>
+				</tr>
+			</thead>
+			<tbody>
+				for i, r := range data {
+					if i < 50 {
+						<tr>
+							<td>{ r.Country }</td>
+							<td>{ r.ProductName }</td>
+							<td><span class="category-badge">{ r.Category }</span></td>
+							<td><strong>${ fmt.Sprintf("%.2f", r.TotalRevenue) }</strong></td>
+							<td>{ fmt.Sprintf("%d", r.Transactions) }</td>
+						</tr>
+					}
+				}
+			</tbody>
+		</table>
+	</div>
+}

@@ -1,0 +1,116 @@
+version: "3"
+
+env:
+  SERVER_PORT: 8084
+  CSV_FILE: "data.csv"
+
+tasks:
+  # Template generation tasks
+  build:templ:
+    cmds:
+      - ~/go/bin/templ generate
+    sources:
+      - "**/*.templ"
+    generates:
+      - "**/*_templ.go"
+
+  # Build task
+  build:
+    cmds:
+      - go build -o bin/main ./cmd/web
+    deps:
+      - build:templ
+
+  # Development live-reload tasks
+  live:templ:
+    cmds:
+      - ~/go/bin/templ generate --watch --proxy="http://localhost:{{.SERVER_PORT}}" --open-browser=false
+
+  live:server:
+    cmds:
+      - |
+        air \
+        -build.cmd "go build -o tmp/bin/main ./cmd/web" \
+        -build.bin "tmp/bin/main" \
+        -build.delay "100" \
+        -build.exclude_dir "tmp,bin" \
+        -build.include_ext "go,templ" \
+        -misc.clean_on_exit true
+
+  live:
+    deps:
+      - live:templ
+      - live:server
+
+  # Test tasks
+  test:
+    cmds:
+      - go test ./...
+
+  test:verbose:
+    cmds:
+      - go test -v ./...
+
+  test:cover:
+    cmds:
+      - go test -coverprofile=coverage.out ./...
+      - go tool cover -html=coverage.out -o coverage.html
+
+  test:race:
+    cmds:
+      - go test -race ./...
+
+  test:bench:
+    cmds:
+      - go test -bench=. ./...
+
+  test:all:
+    desc: "Run all test variations"
+    deps:
+      - test
+      - test:race
+      - test:cover
+
+  # Run tasks
+  run:
+    cmds:
+      - go run ./cmd/web
+    deps:
+      - build:templ
+
+  # Development run with live reload
+  dev:
+    deps:
+      - live
+
+  # Clean tasks
+  clean:
+    cmds:
+      - rm -rf bin/
+      - rm -rf tmp/
+      - rm -f coverage.out coverage.html
+      - find . -name "*_templ.go" -type f -delete
+
+  # Install dependencies
+  deps:
+    cmds:
+      - go mod tidy
+      - go mod download
+
+  # Lint and format
+  fmt:
+    cmds:
+      - go fmt ./...
+      - ~/go/bin/templ fmt .
+
+  # Check for issues
+  vet:
+    cmds:
+      - go vet ./...
+
+  # Full check (format, vet, test)
+  check:
+    deps:
+      - fmt
+      - vet
+      - test

@@ -1,0 +1,5 @@
+transaction_id,transaction_date,user_id,country,region,product_id,product_name,category,price,quantity,total_price,stock_quantity,added_date
+T8d0cd31067f0,2021-07-25,U59971,Germany,Hesse,P1399820,Product_399820,Toys,220.5,3,661.5,623,2023-11-16
+Tb1f5ed592792,2021-07-29,U90999,Germany,Bavaria,P1356703,Product_356703,Toys,443.55,1,443.55,861,2021-05-26
+T7abc5582492b,2022-09-06,U80161,Canada,British Columbia,P1067260,Product_67260,Books,63.18,3,189.54,37,2023-09-16
+T5736d9776e6b,2023-11-29,U10321,India,Maharashtra,P1672483,Product_672483,Clothing,311.99,3,935.97,252,2020-05-05
